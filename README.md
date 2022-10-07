@@ -1,6 +1,6 @@
-# OASIS Angular UI Component Library
+# WEB4 OASIS Angular UI Component Library
 
-This is the OASIS Angular UI Components Library that can be used to pick n mix into other Angular sites who wish to integrate into the OASIS API.
+This is the WEB4 OASIS Angular UI Components Library that can be used to pick n mix into other Angular sites who wish to integrate into the WEB4 OASIS API.
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.0.
 
