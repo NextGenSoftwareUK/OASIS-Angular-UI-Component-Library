@@ -1,0 +1,24 @@
+{
+  "name": "@oasisomniverse/angular",
+  "version": "1.0.0",
+  "description": "OASIS Omniverse Angular 17 standalone UI components",
+  "keywords": ["oasis", "omniverse", "angular", "components", "standalone"],
+  "author": "NextGenSoftware",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NextGenSoftwareUK/OASIS-Angular-UI-Component-Library.git"
+  },
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./components/*": "./src/components/*.component.ts"
+  },
+  "files": ["src"],
+  "peerDependencies": {
+    "@angular/core": ">=17.0.0",
+    "@angular/common": ">=17.0.0",
+    "@oasisomniverse/web4-api": ">=2.0.0"
+  },
+  "scripts": {}
+}

@@ -1,0 +1,36 @@
+// @oasisomniverse/angular — OASIS Omniverse Angular 17 standalone components
+
+export { AvatarConnectComponent }    from './components/avatar-connect/avatar-connect.component';
+export { AvatarProfileComponent }    from './components/avatar-profile/avatar-profile.component';
+export { ComingSoonComponent }       from './components/coming-soon/coming-soon.component';
+export { ConfirmationComponent }     from './components/confirmation/confirmation.component';
+export { ContactComponent }          from './components/contact/contact.component';
+export { EggsComponent }             from './components/eggs/eggs.component';
+export { ForgotPasswordComponent }   from './components/forgot-password/forgot-password.component';
+export { GameComponent }             from './components/game/game.component';
+export { HyperDriveComponent }       from './components/hyperdrive/hyperdrive.component';
+export { KarmaPanelComponent }       from './components/karma-panel/karma-panel.component';
+export { KarmaToastComponent }       from './components/karma-toast/karma-toast.component';
+export { LoginComponent }            from './components/login/login.component';
+export { MapComponent }              from './components/map/map.component';
+export { MenuMessageComponent }      from './components/menu-message/menu-message.component';
+export { MessagingComponent }        from './components/messaging/messaging.component';
+export { MissionComponent }          from './components/mission/mission.component';
+export { ModalComponent }            from './components/modal/modal.component';
+export { NavbarComponent }           from './components/navbar/navbar.component';
+export { NFTComponent }              from './components/nft/nft.component';
+export { OAppComponent }             from './components/oapp/oapp.component';
+export { OASISCardComponent }        from './components/oasis-card/oasis-card.component';
+export { ONETComponent }             from './components/onet/onet.component';
+export { ONODEComponent }            from './components/onode/onode.component';
+export { ProviderDropdownComponent } from './components/provider-dropdown/provider-dropdown.component';
+export { ProvidersComponent }        from './components/providers/providers.component';
+export { QuestComponent }            from './components/quest/quest.component';
+export { ResetPasswordComponent }    from './components/reset-password/reset-password.component';
+export { SearchAvatarsComponent }    from './components/search-avatars/search-avatars.component';
+export { SeedsComponent }            from './components/seeds/seeds.component';
+export { SettingsComponent }         from './components/settings/settings.component';
+export { SignupComponent }           from './components/signup/signup.component';
+export { StarFieldComponent }        from './components/star-field/star-field.component';
+export { VerifyEmailComponent }      from './components/verify-email/verify-email.component';
+export { WalletComponent }           from './components/wallet/wallet.component';
