@@ -1,6 +1,6 @@
 # @oasisomniverse/angular — OASIS Angular UI Component Library
 
-The Angular UI component library for the [OASIS Platform](https://oasisomniverse.one). 126 components covering avatar SSO, karma, NFTs, quests, map, seeds, messaging, OApps, providers and more — ready to import into any Angular project.
+The Angular UI component library for the [OASIS Platform](https://oasisomniverse.one). 126 standalone Angular 17 components covering avatar SSO, karma, NFTs, quests, map, seeds, messaging, OApps, providers and more.
 
 [![npm](https://img.shields.io/npm/v/@oasisomniverse/angular)](https://www.npmjs.com/package/@oasisomniverse/angular)
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://oportal.oasisomniverse.one)
@@ -13,28 +13,23 @@ npm install @oasisomniverse/angular
 
 ## Basic Usage
 
-Import the module in your `AppModule`:
+All components are standalone — import them directly into whichever component needs them:
 
 ```ts
-import { OasisAngularModule } from '@oasisomniverse/angular';
+import { LoginComponent, AvatarConnectComponent, KarmaToastComponent } from '@oasisomniverse/angular';
 
-@NgModule({
-  imports: [
-    OasisAngularModule.forRoot({ apiUrl: 'https://api.web4.oasisomniverse.one' })
-  ]
+@Component({
+  standalone: true,
+  imports: [LoginComponent, AvatarConnectComponent, KarmaToastComponent],
+  template: `
+    <oasis-avatar-connect></oasis-avatar-connect>
+    <oasis-karma-toast></oasis-karma-toast>
+  `
 })
-export class AppModule {}
+export class MyComponent {}
 ```
 
-Use components in your templates:
-
-```html
-<oasis-login (onSuccess)="handleLogin($event)"></oasis-login>
-<oasis-avatar-connect></oasis-avatar-connect>
-<oasis-karma-toast message="Quest completed" [amount]="150"></oasis-karma-toast>
-```
-
-All components inherit `apiUrl` from `OasisAngularModule.forRoot()`. You can override it per-component with `[apiUrl]="'https://custom.api'".`
+API configuration and session state are managed by `OasisService`, which is provided at the root level — no `forRoot()` call needed.
 
 ---
 
@@ -44,23 +39,19 @@ All components inherit `apiUrl` from `OasisAngularModule.forRoot()`. You can ove
 
 #### `<oasis-login>`
 
-Avatar login popup/form.
+Avatar login form. Emits navigation events so you can switch to signup or forgot-password within your own auth flow.
 
 ```html
 <oasis-login
-  (onSuccess)="handleLogin($event)"
-  (onClose)="onClose()">
+  (switchTo)="view = $event"
+  (loggedIn)="onLoggedIn()">
 </oasis-login>
 ```
 
-| Input | Type | Default | Description |
-|---|---|---|---|
-| `apiUrl` | `string` | from `forRoot()` | OASIS API base URL override |
-
 | Output | Payload | Description |
 |---|---|---|
-| `onSuccess` | `{ avatarId, username, karma }` | Emitted on successful login |
-| `onClose` | `void` | Emitted when the popup is dismissed |
+| `switchTo` | `'signup' \| 'forgot'` | Emitted when the user clicks Sign Up or Forgot Password |
+| `loggedIn` | `void` | Emitted on successful login |
 
 ---
 
@@ -69,36 +60,22 @@ Avatar login popup/form.
 New avatar registration form.
 
 ```html
-<oasis-signup (onSuccess)="onSignup($event)" (onClose)="onClose()"></oasis-signup>
+<oasis-signup (switchTo)="view = $event"></oasis-signup>
 ```
 
 | Output | Payload | Description |
 |---|---|---|
-| `onSuccess` | avatar data object | Emitted on successful registration |
-| `onClose` | `void` | Emitted when dismissed |
+| `switchTo` | `'login'` | Emitted when the user clicks Sign In |
 
 ---
 
 #### `<oasis-avatar-connect>`
 
-Login/logout toggle chip — manages session state automatically.
+Login/logout toggle chip — fully self-contained. Manages session via `OasisService`. No inputs or outputs required.
 
 ```html
-<oasis-avatar-connect
-  sessionKey="oasis_session"
-  (onLogin)="onLogin($event)"
-  (onLogout)="onLogout()">
-</oasis-avatar-connect>
+<oasis-avatar-connect></oasis-avatar-connect>
 ```
-
-| Input | Type | Default | Description |
-|---|---|---|---|
-| `sessionKey` | `string` | `'oasis_session'` | sessionStorage key for login state persistence |
-
-| Output | Payload | Description |
-|---|---|---|
-| `onLogin` | `{ avatarId, username, karma }` | Emitted after login |
-| `onLogout` | `void` | Emitted after logout |
 
 ---
 
@@ -107,22 +84,22 @@ Login/logout toggle chip — manages session state automatically.
 Password reset request form.
 
 ```html
-<oasis-forgot-password (onClose)="onClose()"></oasis-forgot-password>
+<oasis-forgot-password></oasis-forgot-password>
 ```
 
 ---
 
 #### `<oasis-reset-password>`
 
-Password reset form — use with the token from the reset email link.
+Password reset form. Emits `switchTo` when done so you can navigate back to login.
 
 ```html
-<oasis-reset-password [token]="tokenFromRoute" (onSuccess)="onSuccess()"></oasis-reset-password>
+<oasis-reset-password (switchTo)="view = $event"></oasis-reset-password>
 ```
 
-| Input | Type | Description |
+| Output | Payload | Description |
 |---|---|---|
-| `token` | `string` | **Required.** Reset token from the email link |
+| `switchTo` | `'login'` | Emitted on successful reset |
 
 ---
 
@@ -131,74 +108,37 @@ Password reset form — use with the token from the reset email link.
 Email verification confirmation.
 
 ```html
-<oasis-verify-email [token]="tokenFromRoute" (onSuccess)="onSuccess()"></oasis-verify-email>
+<oasis-verify-email></oasis-verify-email>
 ```
 
 ---
 
 #### `<oasis-search-avatars>`
 
-Search the OASIS avatar directory.
+Search the OASIS avatar directory. Controlled visibility via `[show]`.
 
 ```html
-<oasis-search-avatars (onSelect)="handleSelect($event)"></oasis-search-avatars>
+<oasis-search-avatars [show]="showSearch" (close)="showSearch = false"></oasis-search-avatars>
 ```
 
-| Output | Payload | Description |
-|---|---|---|
-| `onSelect` | avatar object | Emitted when the user picks an avatar |
+| Input | Type | Default | Description |
+|---|---|---|---|
+| `show` | `boolean` | `false` | Controls visibility |
 
----
-
-#### `<oasis-send-invite>` / `<oasis-accept-invite>`
-
-```html
-<oasis-send-invite (onSuccess)="onSuccess()"></oasis-send-invite>
-<oasis-accept-invite [inviteCode]="code" (onSuccess)="onSuccess()"></oasis-accept-invite>
-```
+| Output | Description |
+|---|---|
+| `close` | Emitted when the panel should be hidden |
 
 ---
 
 ### Avatar
 
-#### `<oasis-avatar-profile>`
+Most avatar popups use the `[show]` / `(close)` controlled-visibility pattern:
 
 ```html
-<oasis-avatar-profile [avatarId]="avatarId" (onClose)="onClose()"></oasis-avatar-profile>
-```
-
-| Input | Type | Description |
-|---|---|---|
-| `avatarId` | `string` | Avatar to display — defaults to logged-in user |
-
----
-
-#### `<oasis-view-avatar>`
-
-Read-only avatar card.
-
-```html
-<oasis-view-avatar [avatarId]="avatarId"></oasis-view-avatar>
-```
-
----
-
-#### `<oasis-edit-avatar>`
-
-Edit the logged-in avatar's profile fields.
-
-```html
-<oasis-edit-avatar (onSuccess)="onSuccess()" (onClose)="onClose()"></oasis-edit-avatar>
-```
-
----
-
-#### `<oasis-view-avatar-karma>`
-
-Karma breakdown panel.
-
-```html
-<oasis-view-avatar-karma [avatarId]="avatarId"></oasis-view-avatar-karma>
+<oasis-view-avatar [show]="showAvatar" (close)="showAvatar = false"></oasis-view-avatar>
+<oasis-edit-avatar [show]="showEdit" (close)="showEdit = false"></oasis-edit-avatar>
+<oasis-avatar-wallet [show]="showWallet" (close)="showWallet = false"></oasis-avatar-wallet>
 ```
 
 ---
@@ -207,64 +147,22 @@ Karma breakdown panel.
 
 #### `<oasis-karma-toast>`
 
-Floating karma notification.
+Singleton floating toast. Render once — `OasisService` triggers it automatically when karma changes.
 
 ```html
-<oasis-karma-toast message="Quest completed" [amount]="150"></oasis-karma-toast>
+<oasis-karma-toast></oasis-karma-toast>
 ```
 
-| Input | Type | Description |
-|---|---|---|
-| `message` | `string` | Reason text shown below the karma amount |
-| `amount` | `number` | Karma delta — positive shown in cyan, negative in red |
+No inputs or outputs. Driven entirely by `OasisService`.
 
 ---
 
 #### `<oasis-karma-panel>`
 
-Full karma dashboard.
+Full karma dashboard panel.
 
 ```html
-<oasis-karma-panel (onClose)="onClose()"></oasis-karma-panel>
-```
-
----
-
-### Map
-
-#### `<oasis-map>`
-
-Interactive 3D globe with holon and quest overlays.
-
-```html
-<oasis-map (onClose)="onClose()"></oasis-map>
-```
-
----
-
-### NFT
-
-```html
-<oasis-nft [nftId]="nftId" (onClose)="onClose()"></oasis-nft>
-<oasis-purchase-nft [nftId]="nftId" (onSuccess)="onSuccess()" (onClose)="onClose()"></oasis-purchase-nft>
-```
-
----
-
-### OApp
-
-```html
-<oasis-create-oapp (onSuccess)="onCreated($event)" (onClose)="onClose()"></oasis-create-oapp>
-<oasis-launch-oapp [oappId]="oappId" (onClose)="onClose()"></oasis-launch-oapp>
-```
-
----
-
-### Seeds
-
-```html
-<oasis-seeds (onClose)="onClose()"></oasis-seeds>
-<oasis-pay-with-seeds [amount]="50" [recipientId]="recipientId" (onSuccess)="onSuccess()" (onClose)="onClose()"></oasis-pay-with-seeds>
+<oasis-karma-panel [show]="showKarma" (close)="showKarma = false"></oasis-karma-panel>
 ```
 
 ---
@@ -273,62 +171,67 @@ Interactive 3D globe with holon and quest overlays.
 
 #### `<oasis-modal>`
 
-Reusable modal wrapper.
+Reusable modal wrapper — controlled via `[open]`.
 
 ```html
-<oasis-modal title="My Modal" accentColor="#00c8ff" (onClose)="onClose()">
+<oasis-modal [open]="isOpen" accentColor="rgba(0,200,255,.25)" (close)="isOpen = false">
   <p>Modal content goes here.</p>
 </oasis-modal>
 ```
 
 | Input | Type | Default | Description |
 |---|---|---|---|
-| `title` | `string` | `''` | Modal header title |
-| `accentColor` | `string` | `'#00c8ff'` | Header accent colour |
+| `open` | `boolean` | `false` | Controls whether the modal is visible |
+| `accentColor` | `string` | `'rgba(232,121,249,.25)'` | Border/accent colour |
 
 | Output | Description |
 |---|---|
-| `onClose` | Emitted when dismissed |
-
----
-
-#### `<oasis-nav-bar>`
-
-```html
-<oasis-nav-bar [links]="[{ label: 'Map', href: '/map' }]"></oasis-nav-bar>
-```
-
----
-
-#### `<oasis-settings>`
-
-```html
-<oasis-settings (onClose)="onClose()"></oasis-settings>
-```
-
----
-
-#### `<oasis-wallet>`
-
-```html
-<oasis-wallet (onClose)="onClose()"></oasis-wallet>
-```
-
----
-
-#### `<oasis-star-field>`
-
-```html
-<oasis-star-field></oasis-star-field>
-```
+| `close` | Emitted when the backdrop or close button is clicked |
 
 ---
 
 #### `<oasis-coming-soon>`
 
+Placeholder for features not yet live.
+
 ```html
-<oasis-coming-soon label="Quests"></oasis-coming-soon>
+<oasis-coming-soon title="Quests" message="Coming in the next release."></oasis-coming-soon>
 ```
+
+| Input | Type | Default | Description |
+|---|---|---|---|
+| `title` | `string` | `'Feature Coming Soon'` | Heading text |
+| `message` | `string` | `'This feature is currently under development...'` | Body text |
+
+---
+
+#### `<oasis-confirmation>`
+
+Confirmation dialog.
+
+```html
+<oasis-confirmation
+  title="Delete Avatar?"
+  message="This cannot be undone."
+  confirmLabel="Delete"
+  cancelLabel="Cancel"
+  (confirm)="doDelete()"
+  (cancel)="showConfirm = false">
+</oasis-confirmation>
+```
+
+| Input | Type | Default | Description |
+|---|---|---|---|
+| `title` | `string` | `'Are you sure?'` | Dialog heading |
+| `message` | `string` | `'This action cannot be undone.'` | Body text |
+| `icon` | `string` | `'⚠️'` | Leading icon |
+| `confirmLabel` | `string` | `'Confirm'` | Confirm button label |
+| `cancelLabel` | `string` | `'Cancel'` | Cancel button label |
+
+| Output | Description |
+|---|---|
+| `confirm` | Emitted when the confirm button is clicked |
+| `cancel` | Emitted when cancelled |
 
 ---
 
